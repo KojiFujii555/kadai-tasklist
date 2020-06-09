@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Task;  
 
-class TaskController extends Controller
+class TasksController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,11 +14,18 @@ class TaskController extends Controller
      */
      public function index()
     {
-        $tasks = Task::all();
+        $data = [];
+        if (\Auth::check()) { 
+            $user = \Auth::user();
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('tasks.index', [
-            'tasks' => $tasks,
-        ]);
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+        }
+        
+        return view('tasks.index', $data);
     }
 
     /**
@@ -49,6 +56,7 @@ class TaskController extends Controller
         ]);
         
         $task = new Task;
+        $task->user_id = \Auth::id(); 
         $task->status = $request->status;
         $task->content = $request->content;
         $task->save();
@@ -65,11 +73,12 @@ class TaskController extends Controller
      public function show($id)
     {
         $task = Task::findOrFail($id);
-
         return view('tasks.show', [
             'task' => $task,
         ]);
     }
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -100,9 +109,12 @@ class TaskController extends Controller
         $request->validate([
             'status' => 'required|max:10',
         ]);
+        $user = \Auth::user();
+        
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを更新
+        $task->user_id = \Auth::id(); 
         $task->status = $request->status; 
         $task->content = $request->content;
         $task->save();
@@ -119,6 +131,7 @@ class TaskController extends Controller
      */
      public function destroy($id)
     {
+        $task->user_id = \Auth::id();
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを削除
