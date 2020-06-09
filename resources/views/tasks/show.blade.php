@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
- if (\Auth::check())
+ @if (\Auth::check())
 <!-- ここにページ毎のコンテンツを書く -->
 
 
