@@ -131,13 +131,18 @@ class TasksController extends Controller
      */
      public function destroy($id)
     {
-        $task->user_id = \Auth::id();
         // idの値でメッセージを検索して取得
+
         $task = Task::findOrFail($id);
+    
         // メッセージを削除
-        $task->delete();
+        if (\Auth::id() === $task->user_id) {
+                    $task->delete();
+        }
+
 
         // トップページへリダイレクトさせる
         return redirect('/');
+        
     }
 }
