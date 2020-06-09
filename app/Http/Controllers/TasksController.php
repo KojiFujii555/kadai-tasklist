@@ -72,11 +72,16 @@ class TasksController extends Controller
      */
      public function show($id)
     {
+     if (\Auth::check()) {
+        $task->user_id = \Auth::id(); 
         $task = Task::findOrFail($id);
         return view('tasks.show', [
             'task' => $task,
-        ]);
+        ]);}
+    
+      return redirect('/');
     }
+    
 
 
 
@@ -88,11 +93,15 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
+        if (\Auth::check()) {
+        $task->user_id = \Auth::id(); 
         $task = Task::findOrFail($id);
 
         return view('tasks.edit', [
             'task' => $task,
-        ]);
+        ]);}
+          return redirect('/');
+        
     }
 
     /**
