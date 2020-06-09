@@ -72,16 +72,13 @@ class TasksController extends Controller
      */
      public function show($id)
     {
-     if (\Auth::check()) {
-        $task->user_id = \Auth::id(); 
         $task = Task::findOrFail($id);
+         if (\Auth::id() === $task->user_id){
         return view('tasks.show', [
             'task' => $task,
         ]);}
-    
-      return redirect('/');
+         return redirect('/');
     }
-    
 
 
 
@@ -93,15 +90,12 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        if (\Auth::check()) {
-        $task->user_id = \Auth::id(); 
         $task = Task::findOrFail($id);
-
+ if (\Auth::id() === $task->user_id){
         return view('tasks.edit', [
             'task' => $task,
         ]);}
-          return redirect('/');
-        
+         return redirect('/');
     }
 
     /**
@@ -118,8 +112,9 @@ class TasksController extends Controller
         $request->validate([
             'status' => 'required|max:10',
         ]);
-        $user = \Auth::user();
         
+         if (\Auth::id() === $task->user_id){
+        $user = \Auth::user();
         // idの値でメッセージを検索して取得
         $task = Task::findOrFail($id);
         // メッセージを更新
@@ -127,7 +122,7 @@ class TasksController extends Controller
         $task->status = $request->status; 
         $task->content = $request->content;
         $task->save();
-
+}
         // トップページへリダイレクトさせる
         return redirect('/');
     }
